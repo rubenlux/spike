@@ -58,7 +58,7 @@ class IdentityCoreService(
         if (document.keyAlgorithm != KeyAlgorithm.ED25519 || document.signatureAlgorithm != SignatureAlgorithm.ED25519) {
             return VerificationResult.UNSUPPORTED_ALGORITHM
         }
-        if (document.documentSignature == null) return VerificationResult.MALFORMED_INPUT
+        val signature = document.documentSignature ?: return VerificationResult.MALFORMED_INPUT
 
         return runCatching {
             NodeIdDerivation.validateBinding(document.nodeId, document.keyId, document.publicKey)
@@ -67,7 +67,7 @@ class IdentityCoreService(
                 publicKey = document.publicKey,
                 domainTag = DomainTag.IDENTITY_DOCUMENT_V1,
                 canonicalPayload = canonical,
-                signature = document.documentSignature
+                signature = signature
             )
             if (valid) VerificationResult.VALID else VerificationResult.INVALID_SIGNATURE
         }.getOrDefault(VerificationResult.INVALID_IDENTITY)
