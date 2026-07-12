@@ -163,8 +163,8 @@ class DiscoveryCoreService(
     override suspend fun authenticateCandidate(
         candidateId: CandidateId,
         remoteIdentityDocument: IdentityDocument
-    ): DiscoveryCommandResult<DiscoveryCandidate> =
-        try {
+    ): DiscoveryCommandResult<DiscoveryCandidate> {
+        return try {
             val candidate = candidateRepository.get(candidateId) ?: throw CandidateNotFound(candidateId)
             val identifying = candidateLifecycleService.transition(candidate, DiscoveryCandidateState.IDENTIFYING)
             candidateRepository.save(identifying)
@@ -192,6 +192,7 @@ class DiscoveryCoreService(
         } catch (error: Exception) {
             DiscoveryCommandResult(DiscoveryCommandDisposition.REJECTED, null, error.javaClass.simpleName)
         }
+    }
 
     override suspend fun rejectCandidate(
         candidateId: CandidateId,
@@ -211,8 +212,8 @@ class DiscoveryCoreService(
     override suspend fun markContactObserved(
         encounterId: EncounterId,
         observation: ProximityObservation
-    ): DiscoveryCommandResult<Encounter> =
-        try {
+    ): DiscoveryCommandResult<Encounter> {
+        return try {
             val encounter = encounterRepository.get(encounterId)
                 ?: return DiscoveryCommandResult(DiscoveryCommandDisposition.REJECTED, null, "EncounterNotFound")
             val updated = encounterLifecycleService.recordContact(encounter, observation)
@@ -222,9 +223,10 @@ class DiscoveryCoreService(
         } catch (error: Exception) {
             DiscoveryCommandResult(DiscoveryCommandDisposition.REJECTED, null, error.javaClass.simpleName)
         }
+    }
 
-    override suspend fun markContactLost(encounterId: EncounterId): DiscoveryCommandResult<Encounter> =
-        try {
+    override suspend fun markContactLost(encounterId: EncounterId): DiscoveryCommandResult<Encounter> {
+        return try {
             val encounter = encounterRepository.get(encounterId)
                 ?: return DiscoveryCommandResult(DiscoveryCommandDisposition.REJECTED, null, "EncounterNotFound")
             val now = now()
@@ -247,9 +249,10 @@ class DiscoveryCoreService(
         } catch (error: Exception) {
             DiscoveryCommandResult(DiscoveryCommandDisposition.REJECTED, null, error.javaClass.simpleName)
         }
+    }
 
-    override suspend fun closeEncounter(encounterId: EncounterId, reason: String): DiscoveryCommandResult<Encounter> =
-        try {
+    override suspend fun closeEncounter(encounterId: EncounterId, reason: String): DiscoveryCommandResult<Encounter> {
+        return try {
             val encounter = encounterRepository.get(encounterId)
                 ?: return DiscoveryCommandResult(DiscoveryCommandDisposition.REJECTED, null, "EncounterNotFound")
             val updated = encounterLifecycleService.close(encounter, now())
@@ -259,6 +262,7 @@ class DiscoveryCoreService(
         } catch (error: Exception) {
             DiscoveryCommandResult(DiscoveryCommandDisposition.REJECTED, null, error.javaClass.simpleName)
         }
+    }
 
     override suspend fun recover(): DiscoveryCommandResult<Unit> =
         applied {
