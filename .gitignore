@@ -1,0 +1,31 @@
+# Build outputs
+build/
+*.class
+*.jar
+*.war
+*.ear
+
+# Gradle
+.gradle/
+local.properties
+gradle-app.setting
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Kotlin
+*.kotlin_module
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kotlin daemon
+.kotlin/
+
+# Speckit temp
+.specify/integrations/
