@@ -183,23 +183,26 @@ class SecureSessionCoreImpl(
                         throw SecureSessionError.HandshakeAuthenticationError.HandshakeNodeMismatch("NodeId mismatch in hello")
                     }
 
-                    ctx.remoteNonce = SessionNonce(decoded.nonce)
-                    ctx.remoteEphemeralPublicKey = EphemeralPublicKey(decoded.ephemeralPublicKey)
+                    val activeCtx = ctx.copy(handshakeId = HandshakeId(decoded.handshakeId))
+                    handshakeContexts[sessionId] = activeCtx
+
+                    activeCtx.remoteNonce = SessionNonce(decoded.nonce)
+                    activeCtx.remoteEphemeralPublicKey = EphemeralPublicKey(decoded.ephemeralPublicKey)
 
                     val keyPair = cryptoProvider.generateEphemeralKeyPair()
-                    ctx.localEphemeralKeyPair = keyPair
-                    ctx.state = HandshakeState.EPHEMERAL_KEY_GENERATED
+                    activeCtx.localEphemeralKeyPair = keyPair
+                    activeCtx.state = HandshakeState.EPHEMERAL_KEY_GENERATED
                     emitEvent(SecureSessionEventType.EPHEMERAL_KEY_GENERATED, session.sessionId)
 
                     val nonceBytes = cryptoProvider.secureRandomBytes(16)
-                    ctx.localNonce = SessionNonce(nonceBytes)
+                    activeCtx.localNonce = SessionNonce(nonceBytes)
 
                     // Compute DH shared secret
-                    val dh = cryptoProvider.calculateSharedSecret(keyPair.privateKey, ctx.remoteEphemeralPublicKey!!)
+                    val dh = cryptoProvider.calculateSharedSecret(keyPair.privateKey, activeCtx.remoteEphemeralPublicKey!!)
                     if (dh.all { it == 0.toByte() }) {
                         throw SecureSessionError.EphemeralKeyError.InvalidSharedSecret("Shared secret cannot be all zeroes")
                     }
-                    ctx.dhSharedSecret = dh
+                    activeCtx.dhSharedSecret = dh
                     emitEvent(SecureSessionEventType.DH_SHARED_SECRET_CREATED, session.sessionId)
 
                     // Compute transcript hash
@@ -216,8 +219,8 @@ class SecureSessionCoreImpl(
                         responderEphemPubKey = keyPair.publicKey.bytes,
                         capabilities = decoded.capabilities
                     )
-                    ctx.transcriptHash = cryptoProvider.sha256("OFFLINE_PROTOCOL_SECURE_SESSION_TRANSCRIPT_V1".encodeToByteArray() + canonicalTranscript)
-                    session.transcriptHash = ctx.transcriptHash
+                    activeCtx.transcriptHash = cryptoProvider.sha256("OFFLINE_PROTOCOL_SECURE_SESSION_TRANSCRIPT_V1".encodeToByteArray() + canonicalTranscript)
+                    session.transcriptHash = activeCtx.transcriptHash
                     emitEvent(SecureSessionEventType.HANDSHAKE_TRANSCRIPT_CREATED, session.sessionId)
                     emitEvent(SecureSessionEventType.HANDSHAKE_TRANSCRIPT_HASHED, session.sessionId)
 
@@ -225,7 +228,7 @@ class SecureSessionCoreImpl(
                         version = 1,
                         selectedSuite = CipherSuiteId.OFFLINE_SESSION_SUITE_V1.value,
                         encounterId = session.encounterId,
-                        handshakeId = ctx.handshakeId.value,
+                        handshakeId = activeCtx.handshakeId.value,
                         initiatorNodeId = decoded.initiatorNodeId,
                         responderNodeId = decoded.responderNodeId,
                         initiatorNonce = decoded.nonce,
@@ -234,7 +237,7 @@ class SecureSessionCoreImpl(
                         responderEphemeralPublicKey = keyPair.publicKey.bytes
                     )
 
-                    ctx.state = HandshakeState.HELLO_RECEIVED
+                    activeCtx.state = HandshakeState.HELLO_RECEIVED
                     emitEvent(SecureSessionEventType.SESSION_HELLO_RESPONSE_SENT, session.sessionId)
                     return responseBytes
                 }
