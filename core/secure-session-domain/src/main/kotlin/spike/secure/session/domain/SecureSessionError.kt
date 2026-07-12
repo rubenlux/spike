@@ -45,7 +45,7 @@ sealed class SecureSessionError(message: String, cause: Throwable? = null) : Exc
         class InvalidDerivedKeyMaterial(message: String) : KeyDerivationError(message)
     }
 
-    sealed class SecureRecordError(message: String) : SecureSessionError(message) {
+    sealed class SecureRecordError(message: String, cause: Throwable? = null) : SecureSessionError(message, cause) {
         class SecureRecordTooLarge(message: String) : SecureRecordError(message)
         class MalformedSecureRecord(message: String, cause: Throwable? = null) : SecureRecordError(message, cause)
         class SessionIdMismatch(message: String) : SecureRecordError(message)
