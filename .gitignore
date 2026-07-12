@@ -1,5 +1,7 @@
 # Build outputs
 build/
+**/bin/main/
+**/bin/test/
 *.class
 *.jar
 *.war
