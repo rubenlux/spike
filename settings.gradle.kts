@@ -1,5 +1,8 @@
 rootProject.name = "spike"
 
+// Stage 0 — Legacy leaf (zero internal deps)
+include(":core:transfer")
+
 // Stage 1 — Leaf modules (no internal imports)
 include(":core:identity-domain")
 include(":core:transfer-domain")
@@ -25,7 +28,19 @@ include(":core:transfer-application")
 include(":core:secure-session-application")
 include(":core:discovery-application")
 
-// Stage 5 — Testing modules
+// Stage 5 — Testing modules + encounter-application, discovery-testing
 include(":core:identity-testing")
 include(":core:transfer-testing")
 include(":core:secure-session-testing")
+include(":core:encounter-application")
+include(":core:discovery-testing")
+
+// Stage 6 — Transports
+include(":transports:ble-control-contracts")
+include(":transports:ble-discovery-contracts")
+include(":transports:ble")
+include(":transports:wifi-direct")
+
+// Stage 7 — Cross-cutting
+include(":observability")
+include(":storage")
