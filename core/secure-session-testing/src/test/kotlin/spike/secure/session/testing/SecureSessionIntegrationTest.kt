@@ -166,6 +166,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.SecureRecordError.OutOfOrderRecord> {
             runBlocking { coreB.decrypt(sidB, enc1) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -186,6 +187,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.SecureRecordError.AeadAuthenticationFailure> {
             runBlocking { coreB.decrypt(sidB, tampered) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -206,6 +208,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.SecureRecordError.SessionIdMismatch> {
             runBlocking { coreB.decrypt(sidB, enc) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -228,6 +231,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.SecureRecordError.InvalidKeyEpoch> {
             runBlocking { coreB.decrypt(sidB, enc) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -258,6 +262,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.HandshakeAuthenticationError.InvalidHandshakeSignature> {
             runBlocking { coreB.processHandshakeFrame(sidB, tampered) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -293,6 +298,7 @@ class SecureSessionIntegrationTest {
         assertThrows<Exception> {
             runBlocking { coreB.processHandshakeFrame(sidB, tampered) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -314,6 +320,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.SessionStateError.SecureSessionNotFound> {
             runBlocking { coreA.encrypt(sidA, SecureRecordType.CONTROL, "after close".encodeToByteArray()) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -355,6 +362,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.SessionStateError.SecureSessionNotEstablished> {
             runBlocking { coreA.encrypt(snap.sessionId, SecureRecordType.CONTROL, "data".encodeToByteArray()) }
         }
+        Unit
     }
 
     @Test
@@ -365,6 +373,7 @@ class SecureSessionIntegrationTest {
         assertThrows<SecureSessionError.SessionStateError.SecureSessionNotEstablished> {
             runBlocking { coreA.decrypt(snap.sessionId, ByteArray(50)) }
         }
+        Unit
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -432,8 +441,9 @@ class SecureSessionIntegrationTest {
         val snapB = coreB.acceptSession(SecureSessionTestFixtures.ENCOUNTER_ID, SecureSessionTestFixtures.NODE_A_ID)
 
         assertThrows<Exception> {
-            runBlocking { coreB.processHandshakeFrame(snapB.sessionId, ByteArray(10) { 0xFF.toByte() }) }
+            coreB.processHandshakeFrame(snapB.sessionId, ByteArray(10) { 0xFF.toByte() })
         }
+        Unit
     }
 
     @Test
@@ -442,8 +452,9 @@ class SecureSessionIntegrationTest {
         val (_, sidB) = TwoNodeHarness(coreA, coreB)
 
         assertThrows<SecureSessionError.SecureRecordError.MalformedSecureRecord> {
-            runBlocking { coreB.decrypt(sidB, ByteArray(0)) }
+            coreB.decrypt(sidB, ByteArray(0))
         }
+        Unit
     }
 
     @Test
