@@ -181,7 +181,7 @@ class SecureSessionIntegrationTest {
 
         // Flip a bit in the middle of the encrypted payload
         val tampered = enc.copyOf()
-        tampered[enc.size / 2] = tampered[enc.size / 2].xor(0x01)
+        tampered[enc.size / 2] = (tampered[enc.size / 2].toInt() xor 0x01).toByte()
 
         assertThrows<SecureSessionError.SecureRecordError.AeadAuthenticationFailure> {
             runBlocking { coreB.decrypt(sidB, tampered) }
@@ -253,7 +253,7 @@ class SecureSessionIntegrationTest {
 
         // Tamper the HANDSHAKE_AUTH signature bytes (last 64 bytes of frame)
         val tampered = frame3.copyOf()
-        tampered[tampered.size - 1] = tampered[tampered.size - 1].xor(0xFF.toByte())
+        tampered[tampered.size - 1] = (tampered[tampered.size - 1].toInt() xor 0xFF).toByte()
 
         assertThrows<SecureSessionError.HandshakeAuthenticationError.InvalidHandshakeSignature> {
             runBlocking { coreB.processHandshakeFrame(sidB, tampered) }
@@ -287,7 +287,7 @@ class SecureSessionIntegrationTest {
         // Corrupt middle of the frame to hit the transcript hash field
         val tampered = frame3.copyOf()
         val mid = tampered.size - 64 - 32  // approximate position of transcript hash start
-        if (mid >= 0) tampered[mid] = tampered[mid].xor(0xFF.toByte())
+        if (mid >= 0) tampered[mid] = (tampered[mid].toInt() xor 0xFF).toByte()
 
         // Either transcript mismatch or signature failure — both indicate rejection
         assertThrows<Exception> {
@@ -567,7 +567,7 @@ class SecureSessionIntegrationTest {
         val ciphertext = provider.aeadEncrypt(key, nonce, "msg".encodeToByteArray(), aad)
 
         val tampered = ciphertext.copyOf()
-        tampered[tampered.size - 1] = tampered[tampered.size - 1].xor(0x01)
+        tampered[tampered.size - 1] = (tampered[tampered.size - 1].toInt() xor 0x01).toByte()
 
         assertThrows<javax.crypto.AEADBadTagException> {
             provider.aeadDecrypt(key, nonce, tampered, aad)
