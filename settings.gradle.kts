@@ -42,6 +42,7 @@ include(":core:discovery-application")
 include(":core:security-application")
 include(":core:peer-directory-application")
 include(":core:service-discovery-application")
+include(":core:dtn-routing-application")
 
 // Stage 5 — Testing modules + encounter-application, discovery-testing
 include(":core:identity-testing")
