@@ -9,6 +9,7 @@ include(":core:transfer-domain")
 include(":core:security-domain")
 include(":core:peer-directory-domain")
 include(":core:service-discovery-domain")
+include(":core:dtn-routing-domain")
 include(":crypto:session-crypto-contracts")
 
 // Stage 2 — Contracts depending only on Stage 1
