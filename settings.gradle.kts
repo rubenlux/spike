@@ -48,6 +48,7 @@ include(":core:encounter-application")
 include(":core:discovery-testing")
 include(":core:security-testing")
 include(":core:peer-directory-testing")
+include(":core:service-discovery-testing")
 
 // Stage 6 — Transports
 include(":transports:ble-control-contracts")
