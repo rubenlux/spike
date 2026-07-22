@@ -69,7 +69,7 @@ class DelayTolerantRoutingCoreTest {
         }
 
         assertNotNull(caughtUnauthorized)
-        assertTrue(caughtUnauthorized.message.contains("DENIED_NO_MATCHING_GRANT"))
+        assertTrue(caughtUnauthorized!!.message.contains("DENIED_NO_MATCHING_GRANT"))
 
         // Durable commit MUST NOT have occurred
         val storedState = repository.getStoredEnvelopeState(envelope.envelopeId)
