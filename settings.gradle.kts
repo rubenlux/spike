@@ -19,11 +19,13 @@ include(":core:secure-session-domain")
 include(":core:security-contracts")
 include(":core:peer-directory-contracts")
 include(":core:service-discovery-contracts")
+include(":core:dtn-routing-contracts")
 include(":crypto:crypto-provider-contracts")
 include(":storage:identity-storage-contracts")
 include(":storage:security-storage-contracts")
 include(":storage:peer-directory-storage-contracts")
 include(":storage:service-discovery-storage-contracts")
+include(":storage:dtn-routing-storage-contracts")
 
 // Stage 3 — Modules depending on Stage 1-2
 include(":core:discovery-domain")
