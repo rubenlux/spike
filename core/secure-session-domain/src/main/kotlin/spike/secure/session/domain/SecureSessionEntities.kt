@@ -90,7 +90,7 @@ data class SessionKeyMaterial(
 }
 
 data class HandshakeContext(
-    val handshakeId: HandshakeId,
+    var handshakeId: HandshakeId,
     var state: HandshakeState = HandshakeState.NEW,
     var localNonce: SessionNonce? = null,
     var remoteNonce: SessionNonce? = null,
@@ -108,7 +108,7 @@ data class HandshakeContext(
 }
 
 data class SecureSession(
-    val sessionId: SecureSessionId,
+    var sessionId: SecureSessionId,
     val encounterId: String,
     val localNodeId: String,
     val remoteNodeId: String,
@@ -127,11 +127,14 @@ data class SecureSession(
     val createdAt: Long = System.currentTimeMillis(),
     var establishedAt: Long? = null,
     var lastActivityAt: Long = System.currentTimeMillis(),
-    var closedAt: Long? = null
+    var closedAt: Long? = null,
+    var handshakeContext: HandshakeContext? = null
 ) {
     fun destroy() {
         keyMaterial?.destroy()
         keyMaterial = null
+        handshakeContext?.destroy()
+        handshakeContext = null
     }
 
     override fun equals(other: Any?): Boolean {
